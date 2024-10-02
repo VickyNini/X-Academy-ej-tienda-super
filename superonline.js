@@ -12,7 +12,7 @@ let carrito = {
 };
 
 const productosDelSuper = [
-    { nombre: "Qeso", precio: 10, categoria: 'lácteos' },
+    { nombre: "Queso", precio: 10, categoria: 'lácteos' },
     { nombre: "Gaseosa", precio: 5, categoria: 'bebidas' },
     { nombre: "Cerveza", precio: 20, categoria: 'bebidas' },
     { nombre: "Arroz", precio: 7, categoria: 'alimentos' },
@@ -24,6 +24,7 @@ const productosDelSuper = [
 
 function listado() {
     productosDelSuper.forEach((producto, index) => {
+       
         console.log(` ${index + 1}. ${producto.nombre} $${producto.precio}`);
     });
 }
@@ -69,7 +70,7 @@ async function sumaCompra() {
             } else {
                 carrito.productos.push({ nombre: producto.nombre, cantidad });
             }
-            carrito.precioTotal += producto.precio * cantidad; // Solo suma el precio al total
+            carrito.precioTotal += producto.precio * cantidad;
         } else {
             console.log('No se ha agregado cantidad válida.');
         }
@@ -82,15 +83,37 @@ async function sumaCompra() {
 
 function mostrarCarrito() {
     console.log('\nCarrito de compras:');
-    if (carrito.productos.length > 0) {
-        carrito.productos.forEach((item, index) => {
-            const precioTotal = item.cantidad * productosDelSuper.find(p => p.nombre === item.nombre).precio;
-            console.log(`${index + 1}. ${item.nombre} x ${item.cantidad} = $${precioTotal}`);
-        });
-    } else {
-        console.log('El carrito está vacío.');
+
+    function agruparPorCategoria(productos) {
+        if (carrito.productos.length > 0) {
+            const agrupados = {};
+
+            carrito.productos.forEach(item => {
+                const productoEncontrado = productos.find(p => p.nombre === item.nombre);
+                if (productoEncontrado) {
+                    const precioTotal = item.cantidad * productoEncontrado.precio;
+                    const categoria = productoEncontrado.categoria;
+
+                    if (!agrupados[categoria]) {
+                        agrupados[categoria] = [];
+                    }
+
+                    agrupados[categoria].push(`${item.nombre} x ${item.cantidad} = $${precioTotal}`);
+                }
+            });
+
+            for (const categoria in agrupados) {
+                if (agrupados[categoria].length > 0) {
+                    console.log(`${categoria}:`);
+                    agrupados[categoria].forEach(item => console.log(item));
+                }
+            }
+        } else {
+            console.log('El carrito está vacío.');
+        }
     }
 
+    agruparPorCategoria(productosDelSuper);
     console.log(`\nTotal: $${carrito.precioTotal}`);
 }
 
@@ -186,4 +209,5 @@ async function tienda() {
 }
 
 tienda();
+
 
